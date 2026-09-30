@@ -99,10 +99,11 @@ io.on('connection', (socket) => {
     const player = players[socket.id];
     if (!player) return;
 
-    player.x = data.x;
-    player.y = data.y;
-    player.targetX = data.targetX !== undefined ? data.targetX : data.x;
-    player.targetY = data.targetY !== undefined ? data.targetY : data.y;
+    player.x = data.x !== undefined ? data.x : player.x;
+    player.y = data.y !== undefined ? data.y : player.y;
+    player.x3d = data.x3d !== undefined ? data.x3d : player.x3d;
+    player.z3d = data.z3d !== undefined ? data.z3d : player.z3d;
+    player.rotY = data.rotY !== undefined ? data.rotY : player.rotY;
     player.direction = data.direction || player.direction;
     player.isMoving = data.isMoving;
     player.zone = data.zone || player.zone;
@@ -114,8 +115,9 @@ io.on('connection', (socket) => {
       id: socket.id,
       x: player.x,
       y: player.y,
-      targetX: player.targetX,
-      targetY: player.targetY,
+      x3d: player.x3d,
+      z3d: player.z3d,
+      rotY: player.rotY,
       direction: player.direction,
       isMoving: player.isMoving,
       zone: player.zone,

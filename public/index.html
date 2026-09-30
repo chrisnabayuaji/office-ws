@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Virtual Office 2D - Kantor Virtual Interaktif</title>
+  <title>Virtual Office 3D - Kantor Virtual Harvest Moon Style</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -11,14 +11,13 @@
 </head>
 <body>
 
-  <!-- Main Game Container -->
+  <!-- Main Game Container (3D WebGL Canvas) -->
   <div id="game-container">
-    <canvas id="game-canvas"></canvas>
 
     <!-- Top Status HUD -->
     <div class="top-hud">
       <div class="hud-panel">
-        <div class="brand-badge">🏢 Virtual Office</div>
+        <div class="brand-badge">🏢 3D Virtual Office</div>
         <div class="zone-indicator">
           <span>📍</span>
           <span id="hud-zone-text">Lobby & Reception</span>
@@ -62,12 +61,12 @@
     <div class="emote-popup" id="emote-popup">
       <button class="emote-btn" data-emote="👋" title="Wave">👋</button>
       <button class="emote-btn" data-emote="☕" title="Coffee">☕</button>
-      <button class="emote-btn" data-emote="👍" title="Thumbs Up">👍</button>
+      <button class="emote-btn" data-emote="🎱" title="Billiard">🎱</button>
+      <button class="emote-btn" data-emote="🎮" title="Game">🎮</button>
+      <button class="emote-btn" data-emote="💤" title="Sleep">💤</button>
+      <button class="emote-btn" data-emote="💪" title="Gym">💪</button>
       <button class="emote-btn" data-emote="❤️" title="Love">❤️</button>
       <button class="emote-btn" data-emote="🎉" title="Party">🎉</button>
-      <button class="emote-btn" data-emote="💡" title="Idea">💡</button>
-      <button class="emote-btn" data-emote="🔥" title="Fire">🔥</button>
-      <button class="emote-btn" data-emote="❓" title="Question">❓</button>
     </div>
 
     <!-- Bottom Action Bar -->
@@ -151,9 +150,9 @@
   <div class="modal-overlay" id="login-modal">
     <div class="login-card">
       <div class="logo-header">
-        <div class="logo-badge">🚀 Virtual Office Space</div>
-        <h1>Masuk ke Kantor</h1>
-        <p>Gunakan WASD/Panah atau klik layar untuk berjalan</p>
+        <div class="logo-badge">🌟 3D Harvest Moon Style</div>
+        <h1>Masuk ke Kantor 3D</h1>
+        <p>Gunakan WASD / Panah / Klik lantai untuk berjalan di dunia 3D</p>
       </div>
 
       <form id="login-form">
@@ -203,19 +202,21 @@
         </div>
 
         <button type="submit" class="btn-primary">
-          <span>Masuk Kantor</span>
+          <span>Masuk Kantor 3D</span>
           <span>➔</span>
         </button>
       </form>
     </div>
   </div>
 
-  <!-- Socket.io & Scripts -->
+  <!-- Socket.io & 3D Three.js Libraries -->
+  <script src="/libs/three.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/js/audio.js"></script>
-  <script src="/js/map.js"></script>
+  <script src="/js/character3d.js"></script>
+  <script src="/js/map3d.js"></script>
+  <script src="/js/game3d.js"></script>
   <script src="/js/whiteboard.js"></script>
-  <script src="/js/game.js"></script>
   <script src="/js/main.js"></script>
 </body>
 </html>

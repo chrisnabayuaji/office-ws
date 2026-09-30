@@ -1,16 +1,15 @@
-# 🏢 Virtual Office 2D - Kantor Virtual Interaktif Multiplayer
+# 🏢 3D Virtual Office - Kantor Virtual Interaktif Gaya Harvest Moon 🌟
 
-Aplikasi kantor virtual real-time 2D berbasis web layaknya game (seperti Gather.town) yang memungkinkan tim/teman Anda bergabung cukup dengan memasukkan nama/username, mengkustomisasi avatar, dan berjalan bersama di kantor virtual secara real-time.
+Aplikasi kantor virtual real-time **3D (Gaya Harvest Moon / Isometric Low-Poly)** berbasis WebGL (Three.js) yang memungkinkan tim/rekan Anda bergabung cukup dengan memasukkan nama/username, mengkustomisasi karakter chibi 3D, dan menjelajahi kantor virtual bersama-sama secara real-time.
 
 ---
 
-## 🌟 Fitur Utama
+## 🌟 Fitur Utama 3D
 
-1. **Multiplayer Real-time**:
-   - Bergabung instan hanya dengan memasukkan nama/username.
-   - Kustomisasi avatar (warna baju, warna kulit, warna rambut).
-   - Sinkronisasi pergerakan karakter 60 FPS yang mulus.
-   - Papan nama & status kustom di atas kepala setiap karakter.
+1. **Grafis 3D Bergaya Harvest Moon / Chibi Stylized**:
+   - Tampilan perspektif **Isometrik 3D 45-derajat** yang imut dan cozy layaknya *Harvest Moon / Animal Crossing*.
+   - Pencahayaan lembut dengan **Real-time Soft Shadows (Three.js)** dan glow neon di ruangan game, lampu tidur, & air mancur.
+   - Karakter Chibi 3D dengan animasi langkah kaki (*walk cycle bobbing*), ayunan tangan, bayangan dinamis, serta billboard nametag & status 3D di atas kepala.
 
 2. **Kontrol Karakter**:
    - **Keyboard**: Gunakan tombol `W`, `A`, `S`, `D` atau tombol **Panah (Arrow keys)** untuk berjalan.

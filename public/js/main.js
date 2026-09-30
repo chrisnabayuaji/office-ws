@@ -1,4 +1,4 @@
-// Main Application Controller & Network Manager
+// Main Application Controller & Network Manager (3D Harvest Moon Edition)
 
 class NetworkManager {
   constructor() {
@@ -8,7 +8,7 @@ class NetworkManager {
 
   setupListeners() {
     this.socket.on('connect', () => {
-      console.log('Connected to server!');
+      console.log('Connected to 3D Virtual Office server!');
     });
 
     this.socket.on('init', (data) => {
@@ -49,8 +49,9 @@ class NetworkManager {
     this.socket.on('playerUpdatedStatus', (data) => {
       const p = window.game.players[data.id];
       if (p) {
-        p.status = data.status;
-        p.statusEmoji = data.statusEmoji;
+        p.data.status = data.status;
+        p.data.statusEmoji = data.statusEmoji;
+        p.model.updateNametag(data.status, data.statusEmoji);
         this.updateCoworkersList(window.game.players);
         if (data.id === window.game.selfId) {
           this.updateTopHUD();
@@ -154,7 +155,7 @@ class NetworkManager {
     const countBadge = document.getElementById('coworker-count-badge');
     if (!list) return;
 
-    const playerList = Object.values(players || {});
+    const playerList = Object.values(players || {}).map(p => p.data || p);
     if (countBadge) countBadge.innerText = playerList.length;
 
     list.innerHTML = '';
@@ -184,17 +185,17 @@ class NetworkManager {
     if (!me) return;
 
     const zoneEl = document.getElementById('hud-zone-text');
-    if (zoneEl) zoneEl.innerText = me.zone || 'Lobby';
+    if (zoneEl) zoneEl.innerText = me.data.zone || 'Lobby';
 
     const statusEl = document.getElementById('hud-status-text');
-    if (statusEl) statusEl.innerText = `${me.statusEmoji || '🟢'} ${me.status || 'Available'}`;
+    if (statusEl) statusEl.innerText = `${me.data.statusEmoji || '🟢'} ${me.data.status || 'Available'}`;
   }
 }
 
 // Global initialization
 window.addEventListener('DOMContentLoaded', () => {
-  const canvas = document.getElementById('game-canvas');
-  window.game = new Game(canvas);
+  const container = document.getElementById('game-container');
+  window.game = new Game3D(container);
   window.appNetwork = new NetworkManager();
 
   // Whiteboard setup
@@ -214,7 +215,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
   function renderPreview() {
     pCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
-    // Body
+
+    // Torso 3D style
     pCtx.fillStyle = avatarState.color;
     pCtx.beginPath();
     pCtx.roundRect(16, 26, 32, 26, 6);
@@ -223,6 +225,8 @@ window.addEventListener('DOMContentLoaded', () => {
     // Collar
     pCtx.fillStyle = '#ffffff';
     pCtx.fillRect(29, 26, 6, 8);
+    pCtx.fillStyle = '#ef4444';
+    pCtx.fillRect(30.5, 30, 3, 7);
 
     // Head
     pCtx.fillStyle = avatarState.skin;
@@ -241,6 +245,11 @@ window.addEventListener('DOMContentLoaded', () => {
     pCtx.fillStyle = '#1e293b';
     pCtx.fillRect(26, 20, 3, 4);
     pCtx.fillRect(35, 20, 3, 4);
+
+    // Blush
+    pCtx.fillStyle = '#f43f5e';
+    pCtx.fillRect(24, 24, 4, 2);
+    pCtx.fillRect(36, 24, 4, 2);
   }
   renderPreview();
 
@@ -251,7 +260,6 @@ window.addEventListener('DOMContentLoaded', () => {
       const color = e.target.dataset.color;
       avatarState[type] = color;
 
-      // Toggle active border
       e.target.parentElement.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
       e.target.classList.add('active');
 
@@ -278,7 +286,7 @@ window.addEventListener('DOMContentLoaded', () => {
     if (window.soundFX) window.soundFX.init();
   });
 
-  // HUD & Sidebar Button Actions
+  // HUD & Sidebar Buttons
   const chatToggleBtn = document.getElementById('chat-toggle-btn');
   const coworkersToggleBtn = document.getElementById('coworkers-toggle-btn');
   const emoteToggleBtn = document.getElementById('emote-toggle-btn');
@@ -314,7 +322,7 @@ window.addEventListener('DOMContentLoaded', () => {
     soundToggleBtn.querySelector('.btn-label').innerText = enabled ? 'Sound ON' : 'Sound OFF';
   });
 
-  // Close sidebar buttons
+  // Close sidebars
   document.querySelectorAll('.close-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       chatSidebar.classList.remove('open');
@@ -328,6 +336,7 @@ window.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', (e) => {
       const emote = e.currentTarget.dataset.emote;
       window.appNetwork.sendEmote(emote);
+      window.game.showEmote(window.game.selfId, emote);
       emotePopup.classList.remove('open');
     });
   });
@@ -384,7 +393,7 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('wb-add-sticky-btn').addEventListener('click', () => {
-    const text = prompt('Enter your sticky note text:');
+    const text = prompt('Ketik catatan sticky note:');
     if (!text || !text.trim()) return;
 
     const colors = ['#fef08a', '#bbf7d0', '#fed7aa', '#e9d5ff', '#bae6fd'];
@@ -399,19 +408,20 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('wb-clear-btn').addEventListener('click', () => {
-    if (confirm('Clear the entire meeting whiteboard?')) {
+    if (confirm('Bersihkan seluruh whiteboard rapat?')) {
       window.appNetwork.sendWhiteboardClear();
     }
   });
 
-  // Teleport helper
+  // Teleport helper in 3D
   window.teleportTo = (targetId) => {
     const target = window.game.players[targetId];
     const me = window.game.players[window.game.selfId];
     if (target && me) {
-      me.x = target.x + 30;
-      me.y = target.y;
-      window.game.isSitting = false;
+      me.model.group.position.x = target.model.group.position.x + 2;
+      me.model.group.position.z = target.model.group.position.z;
+      me.model.isSitting = false;
+      me.model.isSleeping = false;
       if (window.soundFX) window.soundFX.playPop();
     }
   };
