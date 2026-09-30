@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Virtual Office 2D - Kantor Virtual Interaktif</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <!-- Main Game Container -->
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+
+    <!-- Top Status HUD -->
+    <div class="top-hud">
+      <div class="hud-panel">
+        <div class="brand-badge">🏢 Virtual Office</div>
+        <div class="zone-indicator">
+          <span>📍</span>
+          <span id="hud-zone-text">Lobby & Reception</span>
+        </div>
+      </div>
+
+      <div class="hud-panel">
+        <div class="user-status-pill" id="user-status-pill" title="Ubah status">
+          <span id="hud-status-text">🟢 Online / Available</span>
+          <small>▾</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Picker Popup -->
+    <div class="status-popup" id="status-popup">
+      <div class="status-option" data-status="Online" data-emoji="🟢">
+        <span>🟢</span> <span>Online / Available</span>
+      </div>
+      <div class="status-option" data-status="In Meeting" data-emoji="🔴">
+        <span>🔴</span> <span>In Meeting</span>
+      </div>
+      <div class="status-option" data-status="Focus Mode" data-emoji="🎧">
+        <span>🎧</span> <span>Focus / Coding</span>
+      </div>
+      <div class="status-option" data-status="Ngopi Dulu" data-emoji="☕">
+        <span>☕</span> <span>Ngopi / Break</span>
+      </div>
+      <div class="status-option" data-status="AFK / Away" data-emoji="🌙">
+        <span>🌙</span> <span>Away / AFK</span>
+      </div>
+    </div>
+
+    <!-- Interaction Prompt (Press E) -->
+    <div class="interaction-prompt" id="interaction-prompt">
+      <span class="key-badge">E</span>
+      <span id="prompt-text">Tekan [E] untuk Berinteraksi</span>
+    </div>
+
+    <!-- Quick Emote Selector Popup -->
+    <div class="emote-popup" id="emote-popup">
+      <button class="emote-btn" data-emote="👋" title="Wave">👋</button>
+      <button class="emote-btn" data-emote="☕" title="Coffee">☕</button>
+      <button class="emote-btn" data-emote="👍" title="Thumbs Up">👍</button>
+      <button class="emote-btn" data-emote="❤️" title="Love">❤️</button>
+      <button class="emote-btn" data-emote="🎉" title="Party">🎉</button>
+      <button class="emote-btn" data-emote="💡" title="Idea">💡</button>
+      <button class="emote-btn" data-emote="🔥" title="Fire">🔥</button>
+      <button class="emote-btn" data-emote="❓" title="Question">❓</button>
+    </div>
+
+    <!-- Bottom Action Bar -->
+    <div class="bottom-hud">
+      <button class="hud-btn" id="chat-toggle-btn" title="Chat">
+        <span class="hud-btn-icon">💬</span>
+        <span class="btn-label">Chat</span>
+      </button>
+
+      <button class="hud-btn" id="emote-toggle-btn" title="Emote">
+        <span class="hud-btn-icon">✨</span>
+        <span class="btn-label">Emote</span>
+      </button>
+
+      <button class="hud-btn" id="coworkers-toggle-btn" title="Teman Online">
+        <span class="hud-btn-icon">👥</span>
+        <span class="btn-label">Teman (<span id="coworker-count-badge">1</span>)</span>
+      </button>
+
+      <button class="hud-btn" id="sound-toggle-btn" title="Sound Effects">
+        <span class="hud-btn-icon">🔊</span>
+        <span class="btn-label">Sound ON</span>
+      </button>
+    </div>
+
+    <!-- Chat Sidebar Panel (Right) -->
+    <div class="sidebar-panel right" id="chat-sidebar">
+      <div class="panel-header">
+        <h3>💬 Chat Kantor</h3>
+        <button class="close-btn">&times;</button>
+      </div>
+      <div class="chat-messages" id="chat-messages-list">
+        <!-- Messages will be injected here -->
+      </div>
+      <form class="chat-input-box" id="chat-form">
+        <input type="text" class="chat-input" id="chat-input-text" placeholder="Ketik pesan..." maxlength="200" autocomplete="off">
+        <button type="submit" class="chat-send-btn">➤</button>
+      </form>
+    </div>
+
+    <!-- Coworkers Directory Panel (Left) -->
+    <div class="sidebar-panel left" id="coworkers-sidebar">
+      <div class="panel-header">
+        <h3>👥 Rekan Kerja Online</h3>
+        <button class="close-btn">&times;</button>
+      </div>
+      <div class="coworkers-list" id="coworkers-list-el">
+        <!-- Coworkers list dynamically populated -->
+      </div>
+    </div>
+
+    <!-- Whiteboard Modal (Meeting Room) -->
+    <div class="whiteboard-modal" id="whiteboard-modal">
+      <div class="whiteboard-container">
+        <div class="whiteboard-toolbar">
+          <div class="toolbar-group">
+            <strong>📝 Meeting Whiteboard</strong>
+            <button class="tool-btn wb-tool-btn active" id="wb-tool-pen">✏️ Pen</button>
+            <button class="tool-btn wb-tool-btn" id="wb-tool-eraser">🧹 Eraser</button>
+            <div class="wb-color-dot active" style="background:#1e293b" data-color="#1e293b"></div>
+            <div class="wb-color-dot" style="background:#ef4444" data-color="#ef4444"></div>
+            <div class="wb-color-dot" style="background:#3b82f6" data-color="#3b82f6"></div>
+            <div class="wb-color-dot" style="background:#10b981" data-color="#10b981"></div>
+            <div class="wb-color-dot" style="background:#f59e0b" data-color="#f59e0b"></div>
+          </div>
+          <div class="toolbar-group">
+            <button class="tool-btn" id="wb-add-sticky-btn">📌 Add Sticky Note</button>
+            <button class="tool-btn" id="wb-clear-btn" style="color: #f87171;">🗑️ Clear</button>
+            <button class="close-btn">&times;</button>
+          </div>
+        </div>
+        <div class="whiteboard-body">
+          <canvas id="whiteboard-canvas"></canvas>
+          <div class="sticky-notes-layer" id="sticky-notes-layer"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Login / Character Selection Modal -->
+  <div class="modal-overlay" id="login-modal">
+    <div class="login-card">
+      <div class="logo-header">
+        <div class="logo-badge">🚀 Virtual Office Space</div>
+        <h1>Masuk ke Kantor</h1>
+        <p>Gunakan WASD/Panah atau klik layar untuk berjalan</p>
+      </div>
+
+      <form id="login-form">
+        <div class="avatar-customizer">
+          <div class="avatar-preview-box">
+            <canvas id="avatar-preview-canvas" width="64" height="64"></canvas>
+          </div>
+          <div class="avatar-controls">
+            <div class="color-picker-row">
+              <span>Baju:</span>
+              <div class="color-dots">
+                <div class="color-dot active" style="background:#3b82f6" data-type="color" data-color="#3b82f6"></div>
+                <div class="color-dot" style="background:#10b981" data-type="color" data-color="#10b981"></div>
+                <div class="color-dot" style="background:#f43f5e" data-type="color" data-color="#f43f5e"></div>
+                <div class="color-dot" style="background:#8b5cf6" data-type="color" data-color="#8b5cf6"></div>
+                <div class="color-dot" style="background:#f59e0b" data-type="color" data-color="#f59e0b"></div>
+                <div class="color-dot" style="background:#334155" data-type="color" data-color="#334155"></div>
+              </div>
+            </div>
+
+            <div class="color-picker-row">
+              <span>Kulit:</span>
+              <div class="color-dots">
+                <div class="color-dot active" style="background:#ffd1a4" data-type="skin" data-color="#ffd1a4"></div>
+                <div class="color-dot" style="background:#fcd3b0" data-type="skin" data-color="#fcd3b0"></div>
+                <div class="color-dot" style="background:#d49b6a" data-type="skin" data-color="#d49b6a"></div>
+                <div class="color-dot" style="background:#8d5524" data-type="skin" data-color="#8d5524"></div>
+              </div>
+            </div>
+
+            <div class="color-picker-row">
+              <span>Rambut:</span>
+              <div class="color-dots">
+                <div class="color-dot active" style="background:#4a3728" data-type="hair" data-color="#4a3728"></div>
+                <div class="color-dot" style="background:#1e293b" data-type="hair" data-color="#1e293b"></div>
+                <div class="color-dot" style="background:#d97706" data-type="hair" data-color="#d97706"></div>
+                <div class="color-dot" style="background:#e2e8f0" data-type="hair" data-color="#e2e8f0"></div>
+                <div class="color-dot" style="background:#ec4899" data-type="hair" data-color="#ec4899"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="username-input">Nama / Username</label>
+          <input type="text" id="username-input" class="input-field" placeholder="Masukkan nama kamu..." required autofocus maxlength="16">
+        </div>
+
+        <button type="submit" class="btn-primary">
+          <span>Masuk Kantor</span>
+          <span>➔</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Socket.io & Scripts -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/audio.js"></script>
+  <script src="/js/map.js"></script>
+  <script src="/js/whiteboard.js"></script>
+  <script src="/js/game.js"></script>
+  <script src="/js/main.js"></script>
+</body>
+</html>
